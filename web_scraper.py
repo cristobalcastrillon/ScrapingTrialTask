@@ -4,10 +4,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
+import os
+
+# Absolute path to root
+root_path = os.getcwd()
 
 def scrape_html(url):
     driver.get(url)
-    wait = WebDriverWait(driver, 5)
+    wait = WebDriverWait(driver, 10)
     wait.until(EC.presence_of_all_elements_located)
 
     print('Current URL: ', driver.current_url)
@@ -15,20 +19,30 @@ def scrape_html(url):
     page_html = BeautifulSoup(driver.page_source, 'html.parser')
     return str(page_html)
 
-def write_html_doc(index, html_str):
+def write_html_doc(href, html_str):
     '''
     This function is used for writing an HTML file
-    It respects the directory hierarchy, so if a file's URL implies subdirectories
+    It respects the directory hierarchy, so if an href argument's value implies subdirectories
     (i.e. if it contains '/' characters) it will attempt to create the file in the specified directory locally.
     
     If the directory already exists locally, it will create it there; 
     otherwise, it will first create the directory.
     '''
-    if type(index) is int:
-        index += 1
-    html_file = open(f'{index}.html', 'w')
-    html_file.write(html_str)
-    html_file.close()
+    tokenized_href = href.rsplit('/', 1)
+
+    print(tokenized_href)
+
+    if len(tokenized_href) > 1:
+        os.makedirs(tokenized_href[0], exist_ok=True)
+        os.chdir(tokenized_href[0])
+        html_file = open(f'{tokenized_href[-1]}.html', 'w')
+        html_file.write(html_str)
+        html_file.close()
+        os.chdir(root_path)
+    else: 
+        html_file = open('index.html', 'w')
+        html_file.write(html_str)
+        html_file.close()
 
 def transformLinksArray(array):
     '''
@@ -63,6 +77,7 @@ for link in links_array:
     if not link.startswith('/'):
         htmlDocs.append(scrape_html(link))
     else:
-        htmlDocs.append(scrape_html(f"{base_url}{link}"))
-    curr_ind = links_array.index(link)
-    write_html_doc(curr_ind, htmlDocs[curr_ind])
+        link = link[1:]
+        htmlDocs.append(scrape_html(f"{base_url}/{link}"))
+    curr_ind = links_array.index(f'/{link}')
+    write_html_doc(link, htmlDocs[curr_ind])
