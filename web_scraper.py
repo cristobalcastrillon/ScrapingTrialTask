@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 def scrape_html(url):
     driver.get(url)
-    wait = WebDriverWait(driver, 5)
+    wait = WebDriverWait(driver, 10)
     wait.until(EC.presence_of_all_elements_located)
 
     print('Current URL: ', driver.current_url)
