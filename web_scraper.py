@@ -4,20 +4,24 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
+from selenium.common.exceptions import TimeoutException
 import os
 
 # Absolute path to root
 root_path = os.getcwd()
 
 def scrape_html(url):
-    driver.get(url)
-    wait = WebDriverWait(driver, 10)
-    wait.until(EC.presence_of_all_elements_located)
+    try:
+        driver.get(url)
+        wait = WebDriverWait(driver, 30)
+        wait.until(EC.presence_of_all_elements_located and EC.url_matches(url))
+        
+        print('Current URL: ', driver.current_url)
 
-    print('Current URL: ', driver.current_url)
-
-    page_html = BeautifulSoup(driver.page_source, 'html.parser')
-    return str(page_html)
+        page_html = BeautifulSoup(driver.page_source, 'html.parser')
+        return str(page_html)
+    except TimeoutException:
+        print('Timeout exception occurred for URL: ', url)
 
 def write_html_doc(href, html_str):
     '''
@@ -28,16 +32,25 @@ def write_html_doc(href, html_str):
     If the directory already exists locally, it will create it there; 
     otherwise, it will first create the directory.
     '''
+
+    # TODO: Fix tokenization
+    # Example error: ['collection', 'ivy-league-moocs ']
+    # Leads to TimeoutException and 'TypeError: write() argument must be str, not None'
     tokenized_href = href.rsplit('/', 1)
+
+    print(tokenized_href)
 
     if len(tokenized_href) > 1:
         os.makedirs(tokenized_href[0], exist_ok=True)
         os.chdir(tokenized_href[0])
-        html_file = open(f'{tokenized_href[-1]}.html', 'w')
+        if tokenized_href[-1] == '':
+            html_file = open('index.html', 'w')
+        else:
+            html_file = open(f'{tokenized_href[-1]}.html', 'w')
         html_file.write(html_str)
         html_file.close()
         os.chdir(root_path)
-    else: 
+    elif tokenized_href[0] == '':
         html_file = open('index.html', 'w')
         html_file.write(html_str)
         html_file.close()
