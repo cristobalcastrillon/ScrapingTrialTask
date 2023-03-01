@@ -75,8 +75,7 @@ write_html_doc('', homepage_html_string)
 
 # URLs of any other page on the website either start with the base URL,
 # or a '/'.
-# links_array = driver.find_elements(By.XPATH, f"//a[starts-with(@href, '/') or starts-with(@href, '{base_url}')]")
-links_array = driver.find_elements(By.XPATH, f"//a[starts-with(@href, '/')]")
+links_array = driver.find_elements(By.XPATH, f"//a[starts-with(@href, '/') or starts-with(@href, '{base_url}')]")
 links_array.pop(0)
 links_array = transformLinksArray(links_array)
 
@@ -85,10 +84,10 @@ links_array = transformLinksArray(links_array)
 htmlDocs = []
 
 for link in links_array:
+    curr_ind = links_array.index(link)
     if not link.startswith('/'):
         htmlDocs.append(scrape_html(link))
+        link = link.replace(base_url, '')[1:]
     else:
-        link = link[1:]
-        htmlDocs.append(scrape_html(f"{base_url}/{link}"))
-    curr_ind = links_array.index(f'/{link}')
+        htmlDocs.append(scrape_html(f"{base_url}{link}"))
     write_html_doc(link, htmlDocs[curr_ind])
