@@ -37,6 +37,9 @@ def write_html_doc(href, html_str):
     href = href.replace(' ', '')
     tokenized_href = href.rsplit('/', 1)
 
+    print(href)
+    print(tokenized_href)
+
     if len(tokenized_href) == 2:
         os.makedirs(tokenized_href[0], exist_ok=True)
         os.chdir(tokenized_href[0])
@@ -87,7 +90,7 @@ for link in links_array:
     curr_ind = links_array.index(link)
     if not link.startswith('/'):
         htmlDocs.append(scrape_html(link))
-        link = link.replace(base_url, '')[1:]
+        link = link.replace(base_url, '')
     else:
         htmlDocs.append(scrape_html(f"{base_url}{link}"))
-    write_html_doc(link, htmlDocs[curr_ind])
+    write_html_doc(link[1:], htmlDocs[curr_ind])
