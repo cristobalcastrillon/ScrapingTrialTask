@@ -30,8 +30,6 @@ def write_html_doc(href, html_str):
     '''
     tokenized_href = href.rsplit('/', 1)
 
-    print(tokenized_href)
-
     if len(tokenized_href) > 1:
         os.makedirs(tokenized_href[0], exist_ok=True)
         os.chdir(tokenized_href[0])
