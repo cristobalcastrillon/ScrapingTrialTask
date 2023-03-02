@@ -3,8 +3,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
 from selenium.common.exceptions import TimeoutException
+from bs4 import BeautifulSoup
 import os
 import time
 
@@ -36,9 +36,6 @@ def write_html_doc(href, html_str):
     '''
     href = href.replace(' ', '')
     tokenized_href = href.rsplit('/', 1)
-
-    print(href)
-    print(tokenized_href)
 
     if len(tokenized_href) == 2:
         os.makedirs(tokenized_href[0], exist_ok=True)
