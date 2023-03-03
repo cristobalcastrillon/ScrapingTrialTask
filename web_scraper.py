@@ -15,8 +15,8 @@ root_path = os.getcwd()
 def scrape_html(url):
     try:
         driver.get(url)
-        time.sleep(5)
-        wait = WebDriverWait(driver, 30)
+        time.sleep(3)
+        wait = WebDriverWait(driver, 10)
         wait.until(EC.presence_of_all_elements_located)
         
         print('Current URL: ', driver.current_url)
@@ -44,9 +44,9 @@ def write_html_doc(href, html_str):
 
     try:
         if tokenized_href[-1] == '':
-            html_file = open('index.html', 'w')
+            html_file = open('index', 'w')
         else:
-            html_file = open(f'{tokenized_href[-1]}.html', 'w')
+            html_file = open(f'{tokenized_href[-1]}', 'w')
 
         html_file.write(html_str)
         html_file.close()
@@ -69,7 +69,8 @@ def transformLinksArray(array):
 options = Options()
 prefs = {
   "translate_whitelists": {"en":"hi"},
-  "translate":{"enabled":"true"}
+  "translate":{"enabled":"true"},
+  "profile.managed_default_content_settings.javascript": 1
 }
 options.add_experimental_option("prefs", prefs)
 
