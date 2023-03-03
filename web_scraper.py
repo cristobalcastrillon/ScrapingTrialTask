@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import os
 import time
@@ -14,7 +15,7 @@ root_path = os.getcwd()
 def scrape_html(url):
     try:
         driver.get(url)
-        time.sleep(3)
+        time.sleep(5)
         wait = WebDriverWait(driver, 30)
         wait.until(EC.presence_of_all_elements_located)
         
@@ -65,8 +66,15 @@ def transformLinksArray(array):
 
     return array
 
+options = Options()
+prefs = {
+  "translate_whitelists": {"en":"hi"},
+  "translate":{"enabled":"true"}
+}
+options.add_experimental_option("prefs", prefs)
+
 # Automatic install of chrome driver
-driver = webdriver.Chrome(ChromeDriverManager().install())
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 base_url = 'https://www.classcentral.com'
 
 # Scrape homepage's HTML and write it into a file
